@@ -22,6 +22,16 @@ const stats = [
 
 const marquee = ['Renovation', 'Joinery', 'Flooring', 'Painting', 'Electrical', 'Plumbing']
 
+// Public-folder images. Bound with :src so Vite doesn't try to resolve them
+// at build time — they load from /public at runtime once the files exist.
+const img = {
+  heroVideo: '/hero.mp4',
+  heroPoster: '/hero-poster.jpg',
+  about1: '/about-1.jpg',
+  about2: '/about-2.jpg',
+  serviceFeature: '/service-feature.jpg',
+}
+
 // Magnetic primary button — subtle pull toward the cursor.
 const magnet = ref(null)
 onMounted(() => {
@@ -42,8 +52,8 @@ onMounted(() => {
 <template>
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="/hero-poster.jpg">
-      <source src="/hero.mp4" type="video/mp4" />
+    <video class="hero-video" autoplay muted loop playsinline preload="auto" :poster="img.heroPoster">
+      <source :src="img.heroVideo" type="video/mp4" />
     </video>
     <div class="hero-tint"></div>
 
@@ -81,7 +91,7 @@ onMounted(() => {
         <div class="about-label">
           <span class="eyebrow" v-reveal>About ABOV</span>
           <figure class="about-thumb" v-reveal="1">
-            <img src="/about-1.jpg" alt="A finished ABOV interior" loading="lazy" />
+            <img :src="img.about1" alt="A finished ABOV interior" loading="lazy" />
           </figure>
         </div>
 
@@ -98,7 +108,7 @@ onMounted(() => {
         </div>
 
         <figure class="about-feature" v-reveal="2">
-          <img src="/about-2.jpg" alt="Detail of a renovated kitchen" loading="lazy" />
+          <img :src="img.about2" alt="Detail of a renovated kitchen" loading="lazy" />
         </figure>
       </div>
 
@@ -131,7 +141,7 @@ onMounted(() => {
             <h3>{{ services[0].name }}</h3>
           </div>
           <figure class="svc-figure">
-            <img src="/service-feature.jpg" :alt="services[0].name" loading="lazy" />
+            <img :src="img.serviceFeature" :alt="services[0].name" loading="lazy" />
           </figure>
           <p class="svc-note">{{ services[0].note }}</p>
         </li>
