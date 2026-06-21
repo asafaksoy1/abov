@@ -47,8 +47,8 @@ function onImgError(e) { e.target.classList.add('is-missing') }
         <article class="proj-card" v-for="(p, i) in projects" :key="p.id" v-reveal="i % 3">
           <figure class="proj-img">
             <img
-              v-if="p.image_url"
-              :src="p.image_url"
+              v-if="p.image_urls && p.image_urls[0]"
+              :src="p.image_urls[0]"
               :alt="p.title"
               loading="lazy"
               @error="onImgError"
