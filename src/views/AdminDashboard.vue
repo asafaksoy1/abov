@@ -10,7 +10,7 @@ const saving = ref(false)
 const error = ref('')
 const showForm = ref(false)
 
-const blank = () => ({ id: null, title: '', category: '', description: '', image_url: '' })
+const blank = () => ({ id: null, title: '', category: '', description: '', project_date: '', image_urls: [] })
 const form = ref(blank())
 const imageFile = ref(null)
 const imagePreview = ref('')
@@ -29,7 +29,12 @@ async function loadProjects() {
 }
 
 function openNew() { form.value = blank(); imageFile.value = null; imagePreview.value = ''; showForm.value = true }
-function openEdit(p) { form.value = { ...p }; imagePreview.value = p.image_url || ''; imageFile.value = null; showForm.value = true }
+function openEdit(p) {
+  form.value = { ...p, image_urls: p.image_urls ?? [] }
+  imagePreview.value = (p.image_urls ?? [])[0] || ''
+  imageFile.value = null
+  showForm.value = true
+}
 function closeForm() { showForm.value = false; error.value = '' }
 
 function onFileChange(e) {
@@ -54,9 +59,18 @@ async function save() {
   if (!form.value.title) { error.value = 'Title is required.'; return }
   saving.value = true
   try {
-    let imageUrl = form.value.image_url
-    if (imageFile.value) imageUrl = await uploadImage()
-    const payload = { title: form.value.title, category: form.value.category, description: form.value.description, image_url: imageUrl }
+    let imageUrls = form.value.image_urls ?? []
+    if (imageFile.value) {
+      const newUrl = await uploadImage()
+      imageUrls = [newUrl, ...imageUrls]
+    }
+    const payload = {
+      title: form.value.title,
+      category: form.value.category || null,
+      description: form.value.description || null,
+      project_date: form.value.project_date || null,
+      image_urls: imageUrls,
+    }
     if (form.value.id) {
       await supabase.from('projects').update(payload).eq('id', form.value.id)
     } else {
@@ -103,7 +117,7 @@ async function signOut() {
       <div v-else class="proj-list">
         <div class="proj-row" v-for="p in projects" :key="p.id">
           <figure class="proj-thumb">
-            <img v-if="p.image_url" :src="p.image_url" :alt="p.title" />
+            <img v-if="p.image_urls && p.image_urls[0]" :src="p.image_urls[0]" :alt="p.title" />
             <div v-else class="thumb-placeholder"></div>
           </figure>
           <div class="proj-meta">
@@ -137,6 +151,10 @@ async function signOut() {
             <input v-model="form.category" type="text" placeholder="Full renovation / Flooring / Joinery…" :disabled="saving" />
           </label>
           <label class="field">
+            <span>Project date</span>
+            <input v-model="form.project_date" type="date" :disabled="saving" />
+          </label>
+          <label class="field">
             <span>Description</span>
             <textarea v-model="form.description" rows="4" placeholder="Brief description of the project…" :disabled="saving"></textarea>
           </label>
@@ -145,11 +163,12 @@ async function signOut() {
             <span>Project image</span>
             <label class="upload-zone">
               <img v-if="imagePreview" :src="imagePreview" class="upload-preview" alt="Preview" />
-              <div v-else class="upload-placeholder">Click to choose an image</div>
+              <div v-else class="upload-placeholder">Click or drag an image here</div>
               <input type="file" accept="image/*" class="upload-input" @change="onFileChange" :disabled="saving" />
             </label>
-            <p class="field-hint">Or paste a URL directly:</p>
-            <input v-model="form.image_url" type="url" placeholder="https://…" :disabled="saving" class="url-input" />
+            <p v-if="form.image_urls && form.image_urls.length" class="field-hint">
+              {{ form.image_urls.length }} image(s) saved. Uploading a new one adds it to the front.
+            </p>
           </div>
 
           <p v-if="error" class="form-error" role="alert">{{ error }}</p>
