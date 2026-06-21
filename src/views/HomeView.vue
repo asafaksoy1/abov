@@ -29,6 +29,10 @@ const img = {
   serviceFeature: '/service-feature.jpg',
 }
 
+// If an image is missing (404), hide it so the figure's placeholder tone shows
+// instead of a broken-image icon. Real images display normally once added.
+function onImgError(e) { e.target.classList.add('is-missing') }
+
 // Magnetic primary button — subtle pull toward the cursor.
 const magnet = ref(null)
 onMounted(() => {
@@ -90,7 +94,7 @@ onMounted(() => {
   <section class="section section--cream2 about">
     <div class="container about-grid">
       <figure class="about-img about-img--tall" v-reveal>
-        <img :src="img.about1" alt="A finished ABOV interior" loading="lazy" />
+        <img :src="img.about1" alt="A finished ABOV interior" loading="lazy" @error="onImgError" />
       </figure>
       <div class="about-body" v-reveal="1">
         <span class="kicker">The work</span>
@@ -102,7 +106,7 @@ onMounted(() => {
         <RouterLink to="/projects" class="btn btn-fill with-arrow">View projects <span class="chip">→</span></RouterLink>
       </div>
       <figure class="about-img about-img--wide" v-reveal="2">
-        <img :src="img.about2" alt="Detail of a renovated kitchen" loading="lazy" />
+        <img :src="img.about2" alt="Detail of a renovated kitchen" loading="lazy" @error="onImgError" />
       </figure>
     </div>
   </section>
@@ -121,7 +125,7 @@ onMounted(() => {
       <ol class="services-list">
         <li class="svc-item svc-item--lead" v-reveal>
           <div class="svc-head"><span class="svc-num">01</span><h3>{{ services[0].name }}</h3></div>
-          <figure class="svc-figure"><img :src="img.serviceFeature" :alt="services[0].name" loading="lazy" /></figure>
+          <figure class="svc-figure"><img :src="img.serviceFeature" :alt="services[0].name" loading="lazy" @error="onImgError" /></figure>
           <p class="svc-note">{{ services[0].note }}</p>
         </li>
         <li class="svc-item" v-for="(s, i) in services.slice(1)" :key="s.name" v-reveal="i % 3">
@@ -201,8 +205,9 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 
 /* ---------- ABOUT ---------- */
 .about-grid { display: grid; grid-template-columns: 1fr 1.15fr; grid-template-rows: auto auto; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
-.about-img { margin: 0; border-radius: 5px; overflow: hidden; }
+.about-img { margin: 0; border-radius: 5px; overflow: hidden; background: linear-gradient(135deg, var(--cream-2, #ede5d8) 0%, #e3d8c5 100%); }
 .about-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.about-img img.is-missing { display: none; }
 .about-img--tall { grid-row: 1 / 3; aspect-ratio: 3 / 4.2; }
 .about-img--wide { aspect-ratio: 16 / 10; }
 .about-body { grid-column: 2; }
@@ -223,8 +228,9 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 .svc-num { font-family: var(--mono, monospace); font-size: 0.78rem; color: var(--brass, #d9b87e); letter-spacing: 0.04em; padding-top: 0.45rem; }
 .svc-item h3 { font-family: var(--display, 'Cormorant Garamond', serif); font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 2.1rem); margin: 0; color: var(--cream, #f5efe6); line-height: 1.1; }
 .svc-note { color: rgba(245,239,230,0.66); margin: 0.7rem 0 0 1.9rem; max-width: 54ch; }
-.svc-item--lead .svc-figure { margin: 1.2rem 0 0 1.9rem; border-radius: 5px; overflow: hidden; aspect-ratio: 16/9; }
+.svc-item--lead .svc-figure { margin: 1.2rem 0 0 1.9rem; border-radius: 5px; overflow: hidden; aspect-ratio: 16/9; background: rgba(245,239,230,0.07); }
 .svc-item--lead .svc-figure img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.svc-item--lead .svc-figure img.is-missing { display: none; }
 .svc-item--lead .svc-note { margin-top: 1rem; }
 
 /* ---------- STATS ---------- */
