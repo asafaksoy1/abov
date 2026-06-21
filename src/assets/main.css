@@ -58,7 +58,7 @@ p { line-height: 1.65; }
   border: 1px solid transparent; cursor: pointer; text-decoration: none; line-height: 1;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
-.btn-fill { background: var(--green); color: var(--cream); }       /* on cream sections */
+.btn-fill { background: var(--green); color: #fff; }                /* white text on colour, like the WhatsApp button */
 .btn-fill:hover { background: var(--green-deep); }
 .btn-light { background: var(--cream); color: var(--green); }       /* on green sections */
 .btn-light:hover { background: #fff; }
