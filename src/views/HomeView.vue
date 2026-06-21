@@ -169,7 +169,7 @@ onMounted(() => {
 em { font-style: italic; color: var(--brass, #b08d57); }
 
 /* ---------- HERO ---------- */
-.hero { position: relative; min-height: 96svh; display: flex; align-items: flex-end; overflow: hidden; padding-block: 140px 7vh; }
+.hero { position: relative; min-height: 96svh; display: flex; align-items: center; overflow: hidden; padding-block: 120px 80px; }
 .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
 .hero-tint {
   position: absolute; inset: 0; z-index: 1;
