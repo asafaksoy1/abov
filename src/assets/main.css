@@ -1,57 +1,41 @@
 /* =======================================================================
-   ABOV — premium green design system
-   PASTE THIS AT THE END of src/assets/main.css.
-   Additive: later rules win, so it re-skins the whole site without you
-   deleting anything. Page background stays light, so your other pages
-   (Services / Projects / Contact) remain readable while you review them.
+   ABOV — premium green/cream design system  (Regent-structured)
+   PASTE THIS AT THE END of src/assets/main.css. Additive: later rules win.
    ======================================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Brand greens (from your logo) */
-  --ink:        #11352b;   /* primary green — text + headings on light */
-  --green-deep: #0a2a22;   /* dark bands (hero tint, services, footer)  */
-  --green-mid:  #11352b;
+  /* Brand */
+  --green:      #014d40;   /* primary brand green */
+  --green-deep: #013a30;   /* darker bands / hero tint / CTA */
+  --cream:      #f5efe6;   /* light bg + text on green */
+  --cream-2:    #ede5d8;   /* alternating section bg */
+  --brass:      #b08d57;   /* italic-emphasis + accent */
 
-  /* Warm neutrals */
-  --bone:   #f2ece1;       /* light section bg + text on dark */
-  --bone-2: #eae2d4;       /* alternating section bg          */
-  --white:  #ffffff;
+  /* Text + lines */
+  --ink:   #16221e;        /* body text on cream */
+  --muted: #5c665f;        /* secondary text */
+  --line:  rgba(1, 58, 48, 0.14);
+  --white: #ffffff;
 
-  /* Accent + lines */
-  --brass:  #b89355;       /* luxe accent — numerals, eyebrows, hovers */
-  --muted:  #5e6b62;       /* secondary text on light                  */
-  --line:   rgba(17, 53, 43, 0.14);
-
-  /* Back-compat for any old components */
-  --green: var(--ink);
-  --cream: var(--bone);
+  /* Back-compat */
+  --green-900: var(--green-deep);
 
   /* Type */
   --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --ui:      'Inter', system-ui, -apple-system, sans-serif;
-  --mono:    'Inter', sans-serif;
+  --mono:    'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* ---------- Base ---------- */
-body {
-  background: var(--bone);
-  color: var(--ink);
-  font-family: var(--ui);
-  -webkit-font-smoothing: antialiased;
-}
+body { background: var(--cream); color: var(--ink); font-family: var(--ui); -webkit-font-smoothing: antialiased; }
 
-h1, h2, h3 {
-  font-family: var(--display);
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.005em;
-  line-height: 1.08;
-}
-h1 { font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 500; }
-h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
-h3 { font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; color: var(--green); letter-spacing: -0.005em; line-height: 1.06; }
+h1 { font-size: clamp(2.8rem, 7vw, 5.4rem); font-weight: 500; }
+h2 { font-size: clamp(2rem, 4.8vw, 3.6rem); }
+h3 { font-size: clamp(1.25rem, 2.3vw, 1.6rem); }
+em { font-style: italic; color: var(--brass); }
 
 p { line-height: 1.65; }
 .lead { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--muted); line-height: 1.7; }
@@ -59,25 +43,24 @@ p { line-height: 1.65; }
 /* ---------- Layout ---------- */
 .container { width: min(1200px, 100% - 2.5rem); margin-inline: auto; }
 .section   { padding-block: clamp(3.5rem, 9vw, 7rem); }
+.section--cream2 { background: var(--cream-2); }
 
-/* ---------- Eyebrow ---------- */
-.eyebrow {
-  display: inline-block; font-family: var(--ui);
-  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--brass); margin-bottom: 0.4rem;
+/* ---------- Kicker (mono eyebrow) ---------- */
+.kicker, .eyebrow {
+  display: inline-block; font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--brass); margin-bottom: 0.5rem;
 }
 
 /* ---------- Buttons ---------- */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--ui); font-weight: 500; font-size: 0.95rem;
-  padding: 0.9rem 1.6rem; border-radius: 2px; border: 1px solid transparent;
-  cursor: pointer; text-decoration: none; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; font-family: var(--ui);
+  font-weight: 500; font-size: 0.95rem; padding: 0.9rem 1.6rem; border-radius: 2px;
+  border: 1px solid transparent; cursor: pointer; text-decoration: none; line-height: 1;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
-.btn-fill { background: var(--ink); color: var(--bone); }          /* on light sections */
+.btn-fill { background: var(--green); color: var(--cream); }       /* on cream sections */
 .btn-fill:hover { background: var(--green-deep); }
-.btn-light { background: var(--bone); color: var(--ink); }          /* on dark sections  */
+.btn-light { background: var(--cream); color: var(--green); }       /* on green sections */
 .btn-light:hover { background: #fff; }
 .btn-outline { background: transparent; color: currentColor; border-color: currentColor; }
 .btn-outline:hover { background: rgba(255,255,255,0.08); }
@@ -85,7 +68,4 @@ p { line-height: 1.65; }
 /* ---------- Cards (legacy hook) ---------- */
 .card { background: var(--white); border: 1px solid var(--line); border-radius: 4px; padding: 1.6rem; }
 
-/* ---------- Reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  [v-reveal], .h-anim { opacity: 1 !important; transform: none !important; }
-}
+@media (prefers-reduced-motion: reduce) { [v-reveal], .h-anim { opacity: 1 !important; transform: none !important; } }
