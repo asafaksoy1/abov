@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { whatsappLink } from '../lib/supabase'
 
@@ -12,15 +12,13 @@ const services = [
   { name: 'Plumbing', note: 'Repairs, replacements and full bathroom and kitchen fit-outs.' },
 ]
 
-// NOTE: placeholder figures — replace with your real numbers before launch.
 const stats = [
-  { value: '12', suffix: '+', label: 'Years on the tools' },
-  { value: '240', suffix: '+', label: 'Projects completed' },
-  { value: '100', suffix: '%', label: 'Quoted up front' },
-  { value: '4.9', suffix: '★', label: 'Average rating' },
+  { value: 12,   suffix: '+', label: 'Years on the tools' },
+  { value: 240,  suffix: '+', label: 'Projects completed' },
+  { value: 100,  suffix: '%', label: 'Quoted up front' },
+  { value: 4.9,  suffix: '★', label: 'Average rating' },
 ]
 
-// Public-folder assets, bound with :src so Vite won't resolve them at build.
 const img = {
   heroVideo: '/hero.mp4',
   heroPoster: '/hero-poster.jpg',
@@ -29,24 +27,93 @@ const img = {
   serviceFeature: '/service-feature.jpg',
 }
 
-// If an image is missing (404), hide it so the figure's placeholder tone shows
-// instead of a broken-image icon. Real images display normally once added.
 function onImgError(e) { e.target.classList.add('is-missing') }
 
-// Magnetic primary button — subtle pull toward the cursor.
+// --- Magnetic button ---
 const magnet = ref(null)
-onMounted(() => {
-  const el = magnet.value?.$el ?? magnet.value
-  if (!el) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  if (window.matchMedia('(hover: none)').matches) return
-  const s = 0.28
-  const move = (e) => {
-    const r = el.getBoundingClientRect()
-    el.style.transform = `translate(${(e.clientX - (r.left + r.width / 2)) * s}px, ${(e.clientY - (r.top + r.height / 2)) * s}px)`
+
+// --- Parallax refs ---
+const parallaxAbout1 = ref(null)
+const parallaxAbout2 = ref(null)
+
+// --- Counter refs ---
+const statEls = ref([])
+const countersStarted = ref(false)
+const displayStats = ref(stats.map(s => ({ ...s, display: 0 })))
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3) }
+
+function animateCounters() {
+  if (countersStarted.value) return
+  countersStarted.value = true
+  const duration = 1800
+  const start = performance.now()
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1)
+    const e = easeOut(t)
+    displayStats.value = stats.map(s => ({
+      ...s,
+      display: s.value % 1 === 0
+        ? Math.round(s.value * e)
+        : (s.value * e).toFixed(1),
+    }))
+    if (t < 1) requestAnimationFrame(tick)
   }
-  el.addEventListener('mousemove', move)
-  el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0,0)' })
+  requestAnimationFrame(tick)
+}
+
+// --- Parallax scroll ---
+let ticking = false
+function onScroll() {
+  if (ticking) return
+  ticking = true
+  requestAnimationFrame(() => {
+    const sy = window.scrollY
+    // about images
+    if (parallaxAbout1.value) {
+      parallaxAbout1.value.style.transform = `translateY(${sy * 0.06}px)`
+    }
+    if (parallaxAbout2.value) {
+      parallaxAbout2.value.style.transform = `translateY(${sy * -0.04}px)`
+    }
+    ticking = false
+  })
+}
+
+// --- Counter trigger via IO ---
+let counterIO = null
+
+onMounted(() => {
+  // Magnetic button
+  const el = magnet.value?.$el ?? magnet.value
+  if (el && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.matchMedia('(hover: none)').matches === false) {
+    const s = 0.28
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect()
+      el.style.transform = `translate(${(e.clientX - (r.left + r.width / 2)) * s}px, ${(e.clientY - (r.top + r.height / 2)) * s}px)`
+    })
+    el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0,0)' })
+  }
+
+  // Parallax
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.addEventListener('scroll', onScroll, { passive: true })
+  }
+
+  // Counter IO
+  const statsSection = document.querySelector('.stats-section')
+  if (statsSection) {
+    counterIO = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) animateCounters() },
+      { threshold: 0.3 }
+    )
+    counterIO.observe(statsSection)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  if (counterIO) counterIO.disconnect()
 })
 </script>
 
@@ -78,35 +145,50 @@ onMounted(() => {
   <section class="section statement">
     <div class="container">
       <span class="kicker" v-reveal>Who we are</span>
-      <p class="statement-lead" v-reveal="1">
-        ABOV is a single team for the <em>whole</em> job — design, build and finish — so your home
-        is handled from first message to final clean-up, with <em>no surprises</em> and no chasing.
+      <p class="statement-lead" v-reveal.split="1">
+        ABOV is a single team for the whole job — design, build and finish — so your home
+        is handled from first message to final clean-up, with no surprises and no chasing.
       </p>
       <div class="statement-points">
-        <div v-reveal="0"><h3>Quoted up front</h3><p>A clear price before any work starts. No awkward conversations at the end.</p></div>
-        <div v-reveal="1"><h3>One point of contact</h3><p>Message us directly and get a real reply — start to finish.</p></div>
-        <div v-reveal="2"><h3>Finished properly</h3><p>Edges, corners and clean-up matter. We treat your home like our own.</p></div>
+        <div v-reveal.left="0">
+          <h3>Quoted up front</h3>
+          <p>A clear price before any work starts. No awkward conversations at the end.</p>
+        </div>
+        <div v-reveal.left="1">
+          <h3>One point of contact</h3>
+          <p>Message us directly and get a real reply — start to finish.</p>
+        </div>
+        <div v-reveal.left="2">
+          <h3>Finished properly</h3>
+          <p>Edges, corners and clean-up matter. We treat your home like our own.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ ABOUT / WORK ============ -->
+  <!-- ============ ABOUT ============ -->
   <section class="section section--cream2 about">
     <div class="container about-grid">
-      <figure class="about-img about-img--tall" v-reveal>
-        <img :src="img.about1" alt="A finished ABOV interior" loading="lazy" @error="onImgError" />
+      <figure class="about-img about-img--tall" v-reveal.scale>
+        <div class="about-img-inner" ref="parallaxAbout1">
+          <img :src="img.about1" alt="A finished ABOV interior" loading="lazy" @error="onImgError" />
+        </div>
       </figure>
-      <div class="about-body" v-reveal="1">
-        <span class="kicker">The work</span>
-        <h2>Considered interiors,<br /><em>finished properly.</em></h2>
-        <p class="lead">
+      <div class="about-body">
+        <span class="kicker" v-reveal>The work</span>
+        <h2 v-reveal.split="1">Considered interiors,<br /><em>finished properly.</em></h2>
+        <p class="lead" v-reveal="2">
           We take on the parts most people would rather not coordinate — the trades, the timing, the
           mess — and bring them under one roof so the result feels calm, deliberate and complete.
         </p>
-        <RouterLink to="/projects" class="btn btn-fill with-arrow">View projects <span class="chip">→</span></RouterLink>
+        <RouterLink to="/projects" class="btn btn-fill with-arrow" v-reveal="3">
+          View projects <span class="chip">→</span>
+        </RouterLink>
       </div>
-      <figure class="about-img about-img--wide" v-reveal="2">
-        <img :src="img.about2" alt="Detail of a renovated kitchen" loading="lazy" @error="onImgError" />
+      <figure class="about-img about-img--wide" v-reveal.right>
+        <div class="about-img-inner" ref="parallaxAbout2">
+          <img :src="img.about2" alt="Detail of a renovated kitchen" loading="lazy" @error="onImgError" />
+        </div>
       </figure>
     </div>
   </section>
@@ -117,18 +199,27 @@ onMounted(() => {
     <div class="container services-grid">
       <div class="services-intro">
         <span class="kicker kicker--brass" v-reveal>What we do</span>
-        <h2 v-reveal="1">Plan, build &amp;<br /><em>finish.</em></h2>
+        <h2 v-reveal.split="1">Plan, build &amp;<br /><em>finish.</em></h2>
         <p class="lead lead--light" v-reveal="2">One team from first message to final clean-up.</p>
-        <RouterLink to="/services" class="btn btn-light with-arrow" v-reveal="3">All services <span class="chip">→</span></RouterLink>
+        <RouterLink to="/services" class="btn btn-light with-arrow" v-reveal="3">
+          All services <span class="chip">→</span>
+        </RouterLink>
       </div>
 
       <ol class="services-list">
         <li class="svc-item svc-item--lead" v-reveal>
           <div class="svc-head"><span class="svc-num">01</span><h3>{{ services[0].name }}</h3></div>
-          <figure class="svc-figure"><img :src="img.serviceFeature" :alt="services[0].name" loading="lazy" @error="onImgError" /></figure>
+          <figure class="svc-figure">
+            <img :src="img.serviceFeature" :alt="services[0].name" loading="lazy" @error="onImgError" />
+          </figure>
           <p class="svc-note">{{ services[0].note }}</p>
         </li>
-        <li class="svc-item" v-for="(s, i) in services.slice(1)" :key="s.name" v-reveal="i % 3">
+        <li
+          class="svc-item"
+          v-for="(s, i) in services.slice(1)"
+          :key="s.name"
+          v-reveal="i % 3"
+        >
           <div class="svc-head"><span class="svc-num">{{ String(i + 2).padStart(2, '0') }}</span><h3>{{ s.name }}</h3></div>
           <p class="svc-note">{{ s.note }}</p>
         </li>
@@ -136,12 +227,12 @@ onMounted(() => {
     </div>
   </section>
 
-  <!-- ============ STATS ============ -->
+  <!-- ============ STATS (animated counters) ============ -->
   <section class="section stats-section">
     <div class="container">
       <div class="stats">
-        <div class="stat" v-for="(s, i) in stats" :key="s.label" v-reveal="i">
-          <p class="stat-value">{{ s.value }}<span class="stat-suffix">{{ s.suffix }}</span></p>
+        <div class="stat" v-for="(s, i) in displayStats" :key="s.label" v-reveal="i">
+          <p class="stat-value">{{ s.display }}<span class="stat-suffix">{{ s.suffix }}</span></p>
           <p class="stat-label">{{ s.label }}</p>
         </div>
       </div>
@@ -151,12 +242,12 @@ onMounted(() => {
   <!-- ============ CTA ============ -->
   <section class="section cta">
     <div class="container cta-inner">
-      <div v-reveal>
+      <div v-reveal.left>
         <span class="kicker kicker--brass">Get started</span>
-        <h2 class="cta-title">Tell us what<br /><em>needs doing.</em></h2>
-        <p class="lead lead--light">Send a few photos and we'll come back with honest advice and a price.</p>
+        <h2 class="cta-title" v-reveal.split="1">Tell us what<br /><em>needs doing.</em></h2>
+        <p class="lead lead--light" v-reveal="2">Send a few photos and we'll come back with honest advice and a price.</p>
       </div>
-      <div class="cta-actions" v-reveal="1">
+      <div class="cta-actions" v-reveal.right="1">
         <RouterLink to="/contact" class="btn btn-light">Contact us</RouterLink>
         <a :href="whatsappLink()" target="_blank" rel="noopener" class="link-underline">WhatsApp us →</a>
       </div>
@@ -165,7 +256,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Tokens have fallbacks so this looks right even before the main.css patch. */
 em { font-style: italic; color: var(--brass, #b08d57); }
 
 /* ---------- HERO ---------- */
@@ -179,7 +269,7 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 }
 .hero-inner { position: relative; z-index: 2; max-width: 64rem; }
 .hero-title {
-  font-family: var(--display, 'Cormorant Garamond', Georgia, serif);
+  font-family: var(--display, 'Cormorant Garamond', serif);
   color: var(--cream, #f5efe6); font-weight: 500; line-height: 1.0;
   letter-spacing: -0.005em; font-size: clamp(3rem, 9vw, 6.6rem); margin: 0.7rem 0 1.5rem;
 }
@@ -187,17 +277,14 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 .hero-lead { color: rgba(245,239,230,0.86); max-width: 50ch; font-size: clamp(1.02rem,1.4vw,1.2rem); line-height: 1.65; }
 .hero-cta { margin-top: 2.3rem; display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
 .btn-magnet { will-change: transform; transition: transform 0.25s ease-out, background 0.2s ease; }
-.hero-scroll {
-  position: absolute; bottom: 1.6rem; left: 50%; transform: translateX(-50%); z-index: 2;
-  font-family: var(--mono, monospace); font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(245,239,230,0.7);
-}
+.hero-scroll { position: absolute; bottom: 1.6rem; left: 50%; transform: translateX(-50%); z-index: 2; font-family: var(--mono, monospace); font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(245,239,230,0.7); }
 .hero-scroll span::after { content: ''; display: block; width: 1px; height: 30px; background: rgba(245,239,230,0.4); margin: 0.6rem auto 0; }
 
 /* ---------- STATEMENT ---------- */
 .statement-lead {
   font-family: var(--display, 'Cormorant Garamond', serif); font-weight: 500;
   font-size: clamp(1.6rem, 3.6vw, 2.9rem); line-height: 1.28; letter-spacing: -0.005em;
-  color: var(--green, #014d40); max-width: 24ch; margin: 0.6rem 0 0; max-inline-size: 22ch; max-width: 960px;
+  color: var(--green, #014d40); max-width: 960px; margin: 0.6rem 0 0;
 }
 .statement-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; margin-top: clamp(2.5rem, 6vw, 4.5rem); }
 .statement-points h3 { margin: 0 0 0.4rem; }
@@ -205,15 +292,18 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 
 /* ---------- ABOUT ---------- */
 .about-grid { display: grid; grid-template-columns: 1fr 1.15fr; grid-template-rows: auto auto; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
-.about-img { margin: 0; border-radius: 5px; overflow: hidden; background: linear-gradient(135deg, var(--cream-2, #ede5d8) 0%, #e3d8c5 100%); }
+.about-img { margin: 0; border-radius: 5px; overflow: hidden; background: var(--cream-2, #ede5d8); }
+.about-img-inner { width: 100%; height: 100%; }
 .about-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .about-img img.is-missing { display: none; }
-.about-img--tall { grid-row: 1 / 3; aspect-ratio: 3 / 4.2; }
-.about-img--wide { aspect-ratio: 16 / 10; }
+.about-img--tall { grid-row: 1 / 3; aspect-ratio: 3/4.2; overflow: hidden; }
+.about-img--tall .about-img-inner { height: 115%; margin-top: -7.5%; }
+.about-img--wide { aspect-ratio: 16/10; overflow: hidden; }
+.about-img--wide .about-img-inner { height: 115%; margin-top: -7.5%; }
 .about-body { grid-column: 2; }
 .about-body .lead { margin: 1.1rem 0 2rem; max-width: 44ch; }
 
-/* ---------- SERVICES (green) ---------- */
+/* ---------- SERVICES ---------- */
 .services { position: relative; background: var(--green, #014d40); overflow: hidden; }
 .services-watermark { position: absolute; right: -5%; bottom: -12%; width: 62%; max-width: 760px; aspect-ratio: 700/410; background: url('/abov-logo-white.png') no-repeat center / contain; opacity: 0.06; pointer-events: none; }
 .services-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 0.9fr 1.3fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
@@ -277,7 +367,8 @@ em { font-style: italic; color: var(--brass, #b08d57); }
   .hero-cta { gap: 1rem; }
   .svc-note, .svc-item--lead .svc-figure { margin-left: 0; }
 }
-
-/* ---------- REDUCED MOTION ---------- */
-@media (prefers-reduced-motion: reduce) { .h-anim { animation: none !important; opacity: 1 !important; transform: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .h-anim { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .about-img-inner { transform: none !important; }
+}
 </style>
