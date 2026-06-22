@@ -227,24 +227,12 @@ onUnmounted(() => {
     </div>
   </section>
 
-  <!-- ============ STATS (animated counters) ============ -->
-  <section class="section stats-section">
-    <div class="container">
-      <div class="stats">
-        <div class="stat" v-for="(s, i) in displayStats" :key="s.label" v-reveal="i">
-          <p class="stat-value">{{ s.display }}<span class="stat-suffix">{{ s.suffix }}</span></p>
-          <p class="stat-label">{{ s.label }}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ CTA ============ -->
   <section class="section cta">
     <div class="container cta-inner">
       <div v-reveal.left>
         <span class="kicker kicker--brass">Get started</span>
-        <h2 class="cta-title" v-reveal.split="1">Tell us what<br /><em>needs doing.</em></h2>
+        <h2 class="cta-title" v-reveal="1">Tell us what<br /><em>needs doing.</em></h2>
         <p class="lead lead--light" v-reveal="2">Send a few photos and we'll come back with honest advice and a price.</p>
       </div>
       <div class="cta-actions" v-reveal.right="1">
