@@ -12,9 +12,10 @@ const sending = ref(false)
 const sent = ref(false)
 const error = ref('')
 
-// ── Replace with your Web3Forms key (free at web3forms.com) ──────────
-const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY'
-// ─────────────────────────────────────────────────────────────────────
+// ── Web3Forms key ────────────────────────────────────────────────────
+const WEB3FORMS_KEY = 'c6f69982-68d3-4a45-b086-d75a3402439d'
+// ── ImgBB key ────────────────────────────────────────────────────────
+const IMGBB_KEY = '3a29f72476be5274036c38a88b5f7e96'
 
 function onFileChange(e) {
   const file = e.target.files[0]
@@ -28,9 +29,6 @@ function removeImage() {
   imageFile.value = null
   imagePreview.value = ''
 }
-
-// ── ImgBB free image hosting (get key at api.imgbb.com — free, no customer account needed) ──
-const IMGBB_KEY = 'YOUR_IMGBB_KEY'
 
 async function uploadImage() {
   const formData = new FormData()
