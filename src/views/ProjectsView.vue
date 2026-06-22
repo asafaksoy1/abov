@@ -5,7 +5,6 @@ import { supabase, whatsappLink } from '../lib/supabase'
 
 const projects = ref([])
 const loading = ref(true)
-const selected = ref(null)
 
 onMounted(async () => {
   const { data } = await supabase
@@ -15,15 +14,6 @@ onMounted(async () => {
   projects.value = data ?? []
   loading.value = false
 })
-
-function openProject(p) {
-  selected.value = p
-  document.body.style.overflow = 'hidden'
-}
-function closeProject() {
-  selected.value = null
-  document.body.style.overflow = ''
-}
 
 function onImgError(e) { e.target.classList.add('is-missing') }
 </script>
@@ -49,15 +39,12 @@ function onImgError(e) { e.target.classList.add('is-missing') }
       </div>
 
       <div v-else class="proj-grid">
-        <article
+        <RouterLink
           class="proj-card"
           v-for="(p, i) in projects"
           :key="p.id"
+          :to="`/projects/${p.id}`"
           v-reveal="i % 3"
-          @click="openProject(p)"
-          role="button"
-          tabindex="0"
-          @keydown.enter="openProject(p)"
         >
           <figure class="proj-img">
             <img
@@ -76,42 +63,10 @@ function onImgError(e) { e.target.classList.add('is-missing') }
               <span v-if="p.category" class="proj-tag">{{ p.category }}</span>
             </div>
           </div>
-        </article>
+        </RouterLink>
       </div>
     </div>
   </section>
-
-  <!-- MODAL -->
-  <Teleport to="body">
-    <div v-if="selected" class="modal-overlay" @click.self="closeProject">
-      <div class="modal">
-        <button class="modal-close" @click="closeProject" aria-label="Close">✕</button>
-
-        <!-- Image gallery -->
-        <div class="modal-gallery" v-if="selected.image_urls && selected.image_urls.length">
-          <img
-            v-for="(url, i) in selected.image_urls"
-            :key="i"
-            :src="url"
-            :alt="selected.title"
-            loading="lazy"
-            class="gallery-img"
-            @error="onImgError"
-          />
-        </div>
-
-        <div class="modal-body">
-          <div class="modal-meta">
-            <span v-if="selected.category" class="proj-tag">{{ selected.category }}</span>
-            <span v-if="selected.project_date" class="proj-date">{{ new Date(selected.project_date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) }}</span>
-          </div>
-          <h2 class="modal-title">{{ selected.title }}</h2>
-          <p v-if="selected.description" class="modal-desc">{{ selected.description }}</p>
-          <a :href="whatsappLink(`Hi ABOV, I'd like to discuss a similar project to ${selected.title}.`)" target="_blank" rel="noopener" class="btn btn-fill" style="margin-top:1.5rem">Enquire about this →</a>
-        </div>
-      </div>
-    </div>
-  </Teleport>
 
   <!-- CTA -->
   <section class="section proj-cta">
@@ -139,7 +94,7 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 
 .proj-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); }
 
-.proj-card { cursor: pointer; display: flex; flex-direction: column; gap: 1.1rem; }
+.proj-card { cursor: pointer; display: flex; flex-direction: column; gap: 1.1rem; text-decoration: none; }
 .proj-card:focus-visible { outline: 2px solid var(--green, #014d40); outline-offset: 4px; border-radius: 5px; }
 
 .proj-img {
@@ -163,33 +118,6 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 .proj-tag { font-family: var(--mono, monospace); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass, #b08d57); }
 .proj-date { font-family: var(--mono, monospace); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--muted, #5c665f); margin-left: 0.8rem; }
 
-/* Modal */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(1,42,34,0.55); z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  padding: 1.5rem; backdrop-filter: blur(4px);
-}
-.modal {
-  background: var(--cream, #f5efe6); border-radius: 8px; width: 100%; max-width: 760px;
-  max-height: 90svh; overflow-y: auto; position: relative;
-  box-shadow: 0 24px 64px rgba(1,42,34,0.3);
-}
-.modal-close {
-  position: sticky; top: 1rem; float: right; margin: 1rem 1rem 0 0;
-  background: rgba(1,42,34,0.1); border: none; border-radius: 50%;
-  width: 2.2rem; height: 2.2rem; font-size: 0.9rem; cursor: pointer;
-  color: var(--green, #014d40); transition: background 0.18s ease; z-index: 1;
-}
-.modal-close:hover { background: rgba(1,42,34,0.18); }
-.modal-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 3px; }
-.modal-gallery:has(.gallery-img:only-child) { grid-template-columns: 1fr; }
-.gallery-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
-.gallery-img.is-missing { display: none; }
-.modal-body { padding: clamp(1.5rem, 4vw, 2.5rem); }
-.modal-meta { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
-.modal-title { font-family: var(--display, 'Cormorant Garamond', serif); font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0 0 1rem; color: var(--green, #014d40); line-height: 1.08; }
-.modal-desc { color: var(--muted, #5c665f); line-height: 1.7; margin: 0; white-space: pre-line; }
-
 /* CTA */
 .proj-cta { background: var(--cream-2, #ede5d8); }
 .cta-inner { display: flex; justify-content: space-between; align-items: center; gap: 2.5rem; flex-wrap: wrap; }
@@ -200,6 +128,5 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 @media (max-width: 680px) {
   .proj-grid { grid-template-columns: 1fr; }
   .cta-inner { flex-direction: column; align-items: flex-start; }
-  .modal-gallery { grid-template-columns: 1fr; }
 }
 </style>
