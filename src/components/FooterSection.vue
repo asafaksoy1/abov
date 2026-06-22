@@ -69,7 +69,7 @@ const year = new Date().getFullYear()
 }
 
 /* ---------- Brand col ---------- */
-.foot-logo { height: 42px; width: auto; margin-bottom: 1.4rem; display: block; }
+.foot-logo { height: 60px; width: auto; margin-bottom: 1.4rem; display: block; }
 .blurb { font-size: 0.9rem; max-width: 36ch; line-height: 1.7; }
 .foot-wa {
   display: inline-flex; align-items: center; gap: 0.55rem;
