@@ -71,3 +71,86 @@ p { line-height: 1.65; }
 .card { background: var(--white); border: 1px solid var(--line); border-radius: 4px; padding: 1.6rem; }
 
 @media (prefers-reduced-motion: reduce) { [v-reveal], .h-anim { opacity: 1 !important; transform: none !important; } }
+
+
+/* =======================================================================
+   ABOV — scroll animation system
+   Paste at the END of src/assets/main.css (after the design system patch).
+   Works with the new src/directives/reveal.js.
+   ======================================================================= */
+
+/* ---- base state (hidden) ---- */
+.v-reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.v-reveal--left  { transform: translateX(-48px) translateY(0); }
+.v-reveal--right { transform: translateX(48px) translateY(0); }
+.v-reveal--scale { transform: scale(0.92) translateY(20px); }
+.v-reveal--slow  { transition-duration: 1.1s; }
+
+/* ---- revealed (visible) ---- */
+.v-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* ---- split text ---- */
+.v-reveal--split { overflow: hidden; }
+.split-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.split-word.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- hero text entrance ---- */
+.h-anim {
+  opacity: 0;
+  transform: translateY(28px);
+  animation: heroIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.d1 { animation-delay: 0.1s; }
+.d2 { animation-delay: 0.28s; }
+.d3 { animation-delay: 0.44s; }
+.d4 { animation-delay: 0.58s; }
+
+@keyframes heroIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- image parallax (applied via JS below) ---- */
+.parallax-img {
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* ---- number counter (applied via JS) ---- */
+.stat-value { transition: none; }
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .v-reveal,
+  .v-reveal--left,
+  .v-reveal--right,
+  .v-reveal--scale,
+  .split-word,
+  .h-anim {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .split-word { opacity: 1 !important; transform: none !important; }
+}
