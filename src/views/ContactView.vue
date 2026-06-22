@@ -180,7 +180,7 @@ async function submit() {
 
         <div class="info-block">
           <h3>Where we work</h3>
-          <p>Across the UK — most of our projects are in England.</p>
+          <p>Across the UK — most of our projects are in London.</p>
         </div>
 
         <div class="info-block info-block--cta">
