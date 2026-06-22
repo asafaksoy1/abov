@@ -4,7 +4,7 @@ import { whatsappLink } from '../lib/supabase'
 
 <template>
   <a class="wa" :href="whatsappLink()" target="_blank" rel="noopener" aria-label="Chat with ABOV on WhatsApp">
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
       <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.821 11.821 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.039zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
     </svg>
     <span class="wa-label">WhatsApp Us</span>
@@ -19,27 +19,29 @@ import { whatsappLink } from '../lib/supabase'
   z-index: 60;
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   background: #25D366;
-  color: #07301f;
-  padding: 0.8rem 1.1rem;
+  color: #fff;
+  padding: 0.75rem 1.2rem;
   border-radius: 999px;
-  font-family: var(--display);
-  font-weight: 700;
+  font-family: var(--ui, 'Inter', sans-serif);
+  font-weight: 600;
+  font-size: 0.9rem;
   text-decoration: none;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
-  animation: wa-pulse 2.4s ease-in-out infinite;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  animation: wa-pulse 2.6s ease-in-out infinite;
+  transition: background .2s ease;
 }
-.wa:hover { background: #1ebe5b; }
-.wa-label { font-size: 0.95rem; }
+.wa:hover { background: #1db954; }
+.wa-label { color: #fff; }
 
 @keyframes wa-pulse {
-  0%, 100% { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22), 0 0 0 0 rgba(37, 211, 102, 0.45); }
-  50% { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22), 0 0 0 12px rgba(37, 211, 102, 0); }
+  0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 0 0 0 rgba(37,211,102,0.4); }
+  50%       { box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 0 0 10px rgba(37,211,102,0); }
 }
 
 @media (max-width: 600px) {
   .wa-label { display: none; }
-  .wa { padding: 0.9rem; }
+  .wa { padding: 0.85rem; }
 }
 </style>
