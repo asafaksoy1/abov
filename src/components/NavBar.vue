@@ -55,8 +55,8 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 }
 
 /* Inner */
-.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
-.brand img { height: 44px; width: auto; display: block; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 84px; }
+.brand img { height: 50px; width: auto; display: block; }
 
 /* Links */
 .links { display: flex; align-items: center; gap: 2rem; }
@@ -103,35 +103,38 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 
 /* Mobile */
 @media (max-width: 880px) {
-  .nav-inner { height: 72px; }
-  .brand img { height: 40px; }
+  .nav-inner { height: 76px; }
+  .brand img { height: 46px; }
   .burger { display: flex; }
   .links {
-    position: absolute; top: 72px; left: 0; right: 0;
+    position: absolute; top: 76px; left: 0; right: 0;
     flex-direction: column; align-items: flex-start; gap: 0;
     background: var(--cream, #f5efe6);
     border-bottom: 1px solid var(--line, rgba(1,58,48,0.14));
     transform: translateY(-8px); opacity: 0; pointer-events: none;
     transition: opacity .3s ease, transform .3s ease;
+    overflow: hidden;
   }
   .links a {
     color: var(--ink, #16221e) !important;
     width: 100%; padding: 1.1rem 1.5rem;
     border-bottom: 1px solid var(--line, rgba(1,58,48,0.08));
-    font-size: 0.8rem;
+    font-size: 0.8rem; box-sizing: border-box;
   }
   .links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
   .nav-cta {
-    display: block;
+    display: block !important;
     margin: 1.2rem 1.5rem 1.5rem !important;
     width: calc(100% - 3rem) !important;
     text-align: center !important;
-    padding: 1rem 1.5rem !important;
+    padding: 1rem 1rem !important;
     border-radius: 2px !important;
-    font-size: 0.82rem !important;
+    font-size: 0.8rem !important;
     background: var(--green, #014d40) !important;
     color: #fff !important;
     border: none !important;
+    box-sizing: border-box !important;
+    letter-spacing: 0.14em !important;
   }
 }
 </style>
