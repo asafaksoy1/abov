@@ -56,7 +56,7 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 
 /* Inner */
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
-.brand img { height: 38px; width: auto; display: block; }
+.brand img { height: 44px; width: auto; display: block; }
 
 /* Links */
 .links { display: flex; align-items: center; gap: 2rem; }
@@ -79,9 +79,10 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 .nav-cta {
   background: var(--green, #014d40) !important;
   color: #fff !important;
-  padding: 0.6rem 1.3rem;
+  padding: 0.7rem 1.6rem;
   border-radius: 2px;
   border: 1px solid transparent;
+  letter-spacing: 0.14em;
   transition: background .2s ease, opacity .2s ease !important;
 }
 .nav-cta:hover { background: var(--green-deep, #013a30) !important; opacity: 1 !important; }
@@ -102,11 +103,11 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 
 /* Mobile */
 @media (max-width: 880px) {
-  .nav-inner { height: 68px; }
-  .brand img { height: 32px; }
+  .nav-inner { height: 72px; }
+  .brand img { height: 40px; }
   .burger { display: flex; }
   .links {
-    position: absolute; top: 68px; left: 0; right: 0;
+    position: absolute; top: 72px; left: 0; right: 0;
     flex-direction: column; align-items: flex-start; gap: 0;
     background: var(--cream, #f5efe6);
     border-bottom: 1px solid var(--line, rgba(1,58,48,0.14));
@@ -115,16 +116,22 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
   }
   .links a {
     color: var(--ink, #16221e) !important;
-    width: 100%; padding: 1rem 1.5rem;
+    width: 100%; padding: 1.1rem 1.5rem;
     border-bottom: 1px solid var(--line, rgba(1,58,48,0.08));
-    font-size: 0.78rem;
+    font-size: 0.8rem;
   }
   .links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
   .nav-cta {
-    margin: 1rem 1.5rem 1.5rem;
+    display: block;
+    margin: 1.2rem 1.5rem 1.5rem !important;
     width: calc(100% - 3rem) !important;
-    text-align: center;
-    border-radius: 2px;
+    text-align: center !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 2px !important;
+    font-size: 0.82rem !important;
+    background: var(--green, #014d40) !important;
+    color: #fff !important;
+    border: none !important;
   }
 }
 </style>
