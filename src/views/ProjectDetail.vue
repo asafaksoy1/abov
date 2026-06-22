@@ -179,7 +179,7 @@ em { font-style: italic; color: var(--brass, #b08d57); }
 .detail-list dd { margin: 0; font-weight: 500; color: var(--green, #014d40); }
 .aside-cta { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line, rgba(1,58,48,0.14)); }
 .aside-cta p { font-size: 0.9rem; color: var(--muted, #5c665f); margin: 0 0 1rem; }
-.aside-wa { width: 100%; justify-content: center; gap: 0.6rem; }
+.aside-wa { width: 100%; justify-content: center; gap: 0.6rem; box-sizing: border-box; }
 .btn-secondary-link { display: block; text-align: center; margin-top: 0.8rem; font-size: 0.85rem; color: var(--green, #014d40); text-decoration: none; font-weight: 500; }
 .btn-secondary-link:hover { text-decoration: underline; }
 
