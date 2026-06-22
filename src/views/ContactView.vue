@@ -29,16 +29,19 @@ function removeImage() {
   imagePreview.value = ''
 }
 
+// ── ImgBB free image hosting (get key at api.imgbb.com — free, no customer account needed) ──
+const IMGBB_KEY = 'YOUR_IMGBB_KEY'
+
 async function uploadImage() {
-  const file = imageFile.value
-  const ext = file.name.split('.').pop()
-  const path = `contact/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const { error: upErr } = await supabase.storage
-    .from('contact-uploads')
-    .upload(path, file)
-  if (upErr) throw new Error('Image upload failed: ' + upErr.message)
-  // Store path only (private bucket — admin views via Supabase dashboard)
-  return path
+  const formData = new FormData()
+  formData.append('image', imageFile.value)
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: 'POST',
+    body: formData,
+  })
+  const data = await res.json()
+  if (!data.success) throw new Error('Image upload failed')
+  return data.data.url // direct public URL, included in email
 }
 
 async function submit() {
@@ -49,20 +52,20 @@ async function submit() {
   }
   sending.value = true
   try {
-    // 1. Upload image if attached
-    let imagePath = null
-    if (imageFile.value) imagePath = await uploadImage()
+    // 1. Upload image if attached — get direct public URL
+    let imageUrl = null
+    if (imageFile.value) imageUrl = await uploadImage()
 
-    // 2. Save to Supabase contact_submissions table
+    // 2. Save to Supabase
     await supabase.from('contact_submissions').insert({
       name: name.value,
       email: email.value,
       phone: phone.value || null,
       message: message.value,
-      image_url: imagePath,
+      image_url: imageUrl,
     })
 
-    // 3. Send email notification via Web3Forms
+    // 3. Email via Web3Forms — image URL included so you see it directly in the email
     await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -72,7 +75,7 @@ async function submit() {
         email: email.value,
         phone: phone.value || 'Not provided',
         message: message.value,
-        image_attached: imagePath ? 'Yes — view in Supabase dashboard' : 'No',
+        photo: imageUrl ?? 'No photo attached',
         subject: `New enquiry from ${name.value} — ABOV Interiors`,
       }),
     })
