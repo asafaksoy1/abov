@@ -55,8 +55,8 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 }
 
 /* Inner */
-.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 84px; }
-.brand img { height: 50px; width: auto; display: block; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 88px; }
+.brand img { height: 58px; width: auto; display: block; }
 
 /* Links */
 .links { display: flex; align-items: center; gap: 2rem; }
@@ -103,11 +103,11 @@ const logo = computed(() => solid.value ? '/abov-logo-green.png' : '/abov-logo-w
 
 /* Mobile */
 @media (max-width: 880px) {
-  .nav-inner { height: 76px; }
-  .brand img { height: 46px; }
+  .nav-inner { height: 80px; }
+  .brand img { height: 54px; }
   .burger { display: flex; }
   .links {
-    position: absolute; top: 76px; left: 0; right: 0;
+    position: absolute; top: 80px; left: 0; right: 0;
     flex-direction: column; align-items: flex-start; gap: 0;
     background: var(--cream, #f5efe6);
     border-bottom: 1px solid var(--line, rgba(1,58,48,0.14));
